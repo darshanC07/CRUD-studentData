@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <label for="num">enroll number</label>
+    <input type="number" id="enroll" name="num" /><br /><br />
+    <label for="fname">first name </label>
+    <input type="text" id="fname" name="fname" /><br /><br />
+    <label for="lname">last name </label>
+    <input type="text" id="lname" name="lname" /><br /><br />
+    <label for="dept">department </label>
+    <input type="text" id="dept" name="dept" /><br /><br />
+    <button id="Add">Add</button>
+    <button id="Get">Get</button>
+    <button id="Update">Update</button>
+    <button id="Delete">Delete</button>
+
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+      import {
+        getDatabase,
+        ref,
+        child,
+        set,
+        remove,
+        update,
+        get,
+      } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyAMHz9frwVBLUVdIDg8i6JEJfq6fO8P5Cc",
+        authDomain: "todo-app-95e0a.firebaseapp.com",
+        projectId: "todo-app-95e0a",
+        storageBucket: "todo-app-95e0a.appspot.com",
+        messagingSenderId: "230120372922",
+        appId: "1:230120372922:web:c243f2f2dffc2a3a5ae083",
+      };
+
+      const app = initializeApp(firebaseConfig);
+
+      const db = getDatabase();
+
+      let enroll = document.getElementById("enroll");
+      let fname = document.getElementById("fname");
+      let lname = document.getElementById("lname");
+      let dept = document.getElementById("dept");
+
+      function addData() {
+        set(ref(db,'studentData/'+enroll.value),{
+            enrollNo : Number(enroll.value),
+            studentName : {
+                firstname : fname.value,
+                lastname : lname.value
+            },
+            department : dept.value
+        }).then(()=>{
+            alert("data added successfully.")
+        }).catch((error)=>{
+            alert("unsuccessful");
+            console.log(error);
+        })
+      }
+
+      function retData(){
+        const refdb = ref(db);
+
+        get(child(refdb,'studentData/'+enroll.value)).then((snapshot)=>{
+            if(snapshot.exists){
+                alert(
+                    `studentData \n
+                    enrollNumber : ${snapshot.val().enrollNo},
+                    studentName : {
+                        firstname : ${snapshot.val().studentName.firstname},
+                        lastname : ${snapshot.val().studentName.lastname}
+                    },
+                    dept : ${snapshot.val().department}
+                    `
+                )
+            }
+            else{
+                alert("no data found")
+            }
+        })
+      }
+
+      function updateData() {
+        update(ref(db,'studentData/'+enroll.value),{
+            studentName : {
+                firstname : fname.value,
+                lastname : lname.value
+            },
+            department : dept.value
+        }).then(()=>{
+            alert("data update successfully.")
+        }).catch((error)=>{
+            alert("unsuccessful");
+            console.log(error);
+        })
+      }
+
+      function deleteData() {
+        remove(ref(db,'studentData/'+enroll.value)).then(()=>{
+            alert("data deleted successfully.")
+        }).catch((error)=>{
+            alert("unsuccessful");
+            console.log(error);
+        })
+      }
+
+      document.getElementById("Add").addEventListener('click',addData)
+      document.getElementById("Get").addEventListener('click',retData)
+      document.getElementById("Update").addEventListener('click',updateData)
+      document.getElementById("Delete").addEventListener('click',deleteData)
+    </script>
+  </body>
+</html>
